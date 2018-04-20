@@ -1,0 +1,96 @@
+hash: a3b03d727ae7fb3a7326385fe983b5605086f2252a5157c11e2f0ff4b9773ebe
+updated: 2018-04-20T12:30:40.229277+02:00
+imports:
+- name: github.com/Azure/go-ansiterm
+  version: d6e3b3328b783f23731bc4d058875b0371ff8109
+  subpackages:
+  - winterm
+- name: github.com/docker/docker
+  version: b68221c37ee597950364788204546f9c9d0e46a1
+  subpackages:
+  - api/types
+  - api/types/blkiodev
+  - api/types/container
+  - api/types/filters
+  - api/types/mount
+  - api/types/network
+  - api/types/registry
+  - api/types/strslice
+  - api/types/swarm
+  - api/types/swarm/runtime
+  - api/types/versions
+  - builder/dockerfile/command
+  - builder/dockerfile/parser
+  - opts
+  - pkg/archive
+  - pkg/fileutils
+  - pkg/homedir
+  - pkg/idtools
+  - pkg/ioutils
+  - pkg/jsonlog
+  - pkg/jsonmessage
+  - pkg/longpath
+  - pkg/mount
+  - pkg/pools
+  - pkg/promise
+  - pkg/stdcopy
+  - pkg/system
+  - pkg/term
+  - pkg/term/windows
+- name: github.com/docker/go-connections
+  version: 7395e3f8aa162843a74ed6d48e79627d9792ac55
+  subpackages:
+  - nat
+- name: github.com/docker/go-units
+  version: 47565b4f722fb6ceae66b95f853feed578a4a51c
+- name: github.com/fsouza/go-dockerclient
+  version: 7511300f03c521cfc8e07e88ea8c915add790f50
+  repo: https://github.com/openshift/go-dockerclient.git
+- name: github.com/gogo/protobuf
+  version: 1ef32a8b9fc3f8ec940126907cedb5998f6318e4
+  subpackages:
+  - proto
+- name: github.com/golang/glog
+  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/Microsoft/go-winio
+  version: 7da180ee92d8bd8bb8c37fc560e673e6557c392f
+- name: github.com/Nvveen/Gotty
+  version: cd527374f1e5bff4938207604a14f2e38a9cf512
+- name: github.com/opencontainers/go-digest
+  version: 279bed98673dd5bef374d3b6e4b09e2af76183bf
+- name: github.com/opencontainers/image-spec
+  version: e562b04403929d582d449ae5386ff79dd7961a11
+  subpackages:
+  - specs-go
+  - specs-go/v1
+- name: github.com/opencontainers/runc
+  version: 1f11dc5dba5213400482cd974db20ee1408d2c7f
+  subpackages:
+  - libcontainer/system
+  - libcontainer/user
+- name: github.com/openshift/imagebuilder
+  version: 41f1eb4311d96c876f3951ece26d2a2c007b720b
+  subpackages:
+  - dockerclient
+  - imageprogress
+  - signal
+  - strslice
+- name: github.com/pkg/errors
+  version: 816c9085562cd7ee03e7f8188a1cfd942858cded
+- name: github.com/sirupsen/logrus
+  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
+- name: golang.org/x/crypto
+  version: d6449816ce06963d9d136eee5a56fca5b0616e7e
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/net
+  version: d41e8174641f662c5a2d1c7a5f9e828788eb8706
+  subpackages:
+  - context
+  - context/ctxhttp
+- name: golang.org/x/sys
+  version: a2a45943ae67364d56c5d7d62dee78cff16c8dc8
+  subpackages:
+  - unix
+  - windows
+testImports: []

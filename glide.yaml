@@ -1,0 +1,11 @@
+package: github.com/mfojtik/origin-images-rebuild
+import:
+- package: github.com/openshift/imagebuilder
+  subpackages:
+  - dockerclient
+- package: github.com/sirupsen/logrus
+  version: ^1.0.5
+
+- package: github.com/fsouza/go-dockerclient
+  repo: https://github.com/openshift/go-dockerclient.git
+  version: openshift-3.9

@@ -113,6 +113,10 @@ type ClientExecutor struct {
 	Volumes *ContainerVolumeTracker
 }
 
+func NoAuthFn(string) ([]dockertypes.AuthConfig, bool) {
+	return nil, false
+}
+
 // NewClientExecutor creates a client executor.
 func NewClientExecutor(client *docker.Client) *ClientExecutor {
 	return &ClientExecutor{

@@ -3,6 +3,7 @@ package build
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -34,6 +35,13 @@ func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) er
 	options.Client = client
 	options.AllowPull = true
 	options.Tag = fmt.Sprintf("%s:%s", imageName, imageTag)
+	options.Out, options.ErrOut = os.Stdout, os.Stderr
+
+	defer func() {
+		for _, err := range options.Release() {
+			log.Infof("unable to clean up the build: %v", err)
+		}
+	}()
 
 	binaryPaths := []string{}
 	for _, binary := range config.Binaries {

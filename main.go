@@ -86,7 +86,7 @@ func main() {
 		outputImageTag = *tag
 	}
 
-	builder := build.NewImageBuilder(filepath.Join("_output", "local", "bin", "linux"))
+	builder := build.NewImageBuilder(filepath.Join("_output", "local", "bin", "linux", "amd64"))
 	for name, image := range imageConfig {
 		if !imagesToBuild.Has(name) {
 			continue

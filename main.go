@@ -91,7 +91,7 @@ func main() {
 		if !imagesToBuild.Has(name) {
 			continue
 		}
-		err := builder.Build(openshiftImageRepo+name, outputImageTag, &image.Config)
+		err := builder.Build(openshiftImageRepo+"/"+name, outputImageTag, &image.Config)
 		if err != nil {
 			log.WithField("image", name+":"+outputImageTag).WithError(err).Infof("failed to build image")
 		}

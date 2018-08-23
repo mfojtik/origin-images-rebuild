@@ -49,6 +49,15 @@ images:
   - source: oc
     destination: /usr/bin/oc
 
+- image: node
+  binaries:
+  - source: openshift
+    destination: /usr/bin/openshift
+  - source: openshift-node-config
+    destination: /usr/bin/openshift-node-config
+  - source: hyperkube
+    destination: /usr/bin/hyperkube
+
 - image: keepalived-ipfailover
   binaries:
   - source: openshift

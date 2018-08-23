@@ -1,0 +1,55 @@
+images:
+
+- image: cli
+  binaries:
+  - source: oc
+    destination: /usr/bin/oc
+
+- image: control-plane
+  binaries:
+  - source: oc
+    destination: /usr/bin/oc
+  - source: openshift
+    destination: /usr/bin/openshift
+
+- image: hyperkube
+  binaries:
+  - source: hyperkube
+    destination: /usr/bin/hyperkube
+
+- image: hypershift
+  binaries:
+  - source: hypershift
+    destination: /usr/bin/hypershift
+
+- image: deployer
+  binaries:
+  - source: oc
+    destination: /usr/bin/oc
+  - source: openshift-deploy
+    destination: /usr/bin/openshift-deploy
+
+- image: recycler
+  binaries:
+  - source: oc
+    destination: /usr/bin/oc
+
+- image: haproxy-router
+  binaries:
+  - source: openshift
+    destination: /usr/bin/openshift
+
+- image: template-service-broker
+  binaries:
+  - source: template-service-broker
+    destination: /usr/bin/template-service-broker
+
+- image: docker-builder
+  binaries:
+  - source: oc
+    destination: /usr/bin/oc
+
+- image: keepalived-ipfailover
+  binaries:
+  - source: openshift
+    destination: /usr/bin/openshift

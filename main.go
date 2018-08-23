@@ -2,98 +2,66 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"log"
+	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/mfojtik/origin-images-rebuild/pkg/build"
-	"github.com/mfojtik/origin-images-rebuild/pkg/sets"
 )
 
-type OriginImage struct {
-	Config build.BuildConfig
-}
-
-var openshiftBinary = []build.BinaryTransport{
-	{Source: "openshift", Destination: "/usr/bin/openshift"},
-}
-
-const (
-	latestTag          = "latest"
-	openshiftImageRepo = "openshift"
+var (
+	defaultImageTag  = "latest"
+	defaultImageRepo = "openshift"
 )
 
-var imageConfig = map[string]OriginImage{
-	// Base image
-	"origin-control-plane": {
-		Config: build.BuildConfig{
-			Binaries: []build.BinaryTransport{
-				{Source: "openshift", Destination: "/usr/bin/openshift"},
-				{Source: "oc", Destination: "/usr/bin/oc"},
-				{Source: "hypershift", Destination: "/usr/bin/hypershift"},
-				{Source: "hyperkube", Destination: "/usr/bin/hyperkube"},
-			},
-		},
-	},
-	// cluster-up images
-	"origin-deployer":       {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-sti-builder":    {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-docker-builder": {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-haproxy-router": {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-template-service-broker": {
-		Config: build.BuildConfig{Binaries: []build.BinaryTransport{
-			{Source: "template-service-broker", Destination: "/usr/bin/template-service-broker"},
-		}},
-	},
-	// other images
-	"origin-recycler":              {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-f5-router":             {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-nginx-router":          {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-keepalived-ipfailover": {Config: build.BuildConfig{Binaries: openshiftBinary}},
-	"origin-node":                  {Config: build.BuildConfig{Binaries: openshiftBinary}},
-}
-
-var minimalImages = []string{
-	"origin-control-plane",
-	"origin-deployer",
-	"origin-sti-builder",
-	"origin-docker-builder",
-	"origin-haproxy-router",
-	"origin-template-service-broker",
-}
-
-var additionalImages = []string{
-	"origin-recycler",
-	"origin-f5-router",
-	"origin-nginx-router",
-	"origin-keepalived-ipfailover",
-	"origin-node",
+func getOriginPath() (string, error) {
+	if len(os.Getenv("GOPATH")) == 0 {
+		return "", fmt.Errorf("GOPATH cannot be empty")
+	}
+	originDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "openshift", "origin")
+	if _, err := os.Stat(originDir); err != nil {
+		return "", fmt.Errorf("unable to stat %q: %v", originDir, err)
+	}
+	return originDir, nil
 }
 
 func main() {
-	buildAll := flag.Bool("--all", false, "Build all OpenShift images")
-	tag := flag.String("--tag", latestTag, "Tag to use for built images")
+	originDir, err := getOriginPath()
+	if err != nil {
+		log.Fatalf("Unable to determine origin directory: %v", err)
+	}
+	configPath := filepath.Join(originDir, "images.yaml")
+
+	configPathFlag := flag.String("config", configPath, "A path to config file to use for rebuilding images")
+	tagFlag := flag.String("tag", defaultImageTag, "Image tag to use")
+	repoFlag := flag.String("repo", defaultImageRepo, "Repository prefix to use")
 
 	flag.Parse()
 
-	imagesToBuild := sets.NewString(minimalImages...)
-	if buildAll != nil && *buildAll == true {
-		imagesToBuild.Insert(additionalImages...)
+	if configPathFlag != nil {
+		configPath = *configPathFlag
 	}
 
-	outputImageTag := latestTag
-	if tag != nil {
-		outputImageTag = *tag
+	config, err := build.ReadConfig(configPath)
+	if err != nil {
+		log.Fatalf("Unable to read config file: %v", err)
 	}
 
-	builder := build.NewImageBuilder(filepath.Join("_output", "local", "bin", "linux", "amd64"))
-	for name, image := range imageConfig {
-		if !imagesToBuild.Has(name) {
-			continue
-		}
-		err := builder.Build(openshiftImageRepo+"/"+name, outputImageTag, &image.Config)
+	if tagFlag != nil {
+		defaultImageTag = *tagFlag
+	}
+
+	if repoFlag != nil {
+		defaultImageRepo = *repoFlag
+	}
+
+	builder := build.NewImageBuilder(filepath.Join(originDir, "_output", "local", "bin", "linux", "amd64"))
+
+	for _, image := range config.Images {
+		err := builder.Build(defaultImageRepo+"/"+image.Name, defaultImageTag, &image)
 		if err != nil {
-			log.WithField("image", name+":"+outputImageTag).WithError(err).Infof("failed to build image")
+			log.Printf("Image %q failed to build: %v", image.Name, err)
 		}
 	}
 }

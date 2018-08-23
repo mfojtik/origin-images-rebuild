@@ -3,10 +3,10 @@ package build
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/openshift/imagebuilder"
 	"github.com/openshift/imagebuilder/dockerclient"
@@ -22,6 +22,10 @@ func NewImageBuilder(binarySourceDir string) Interface {
 	}
 }
 
+func binaryToDockerAdd(sourceDir string, t BinaryTransport) string {
+	return fmt.Sprintf("ADD %s %s", filepath.Join(sourceDir, t.Source), t.Destination)
+}
+
 func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) error {
 	client, err := dockerclient.NewClientFromEnv()
 	if err != nil {
@@ -29,7 +33,7 @@ func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) er
 	}
 	options := dockerclient.NewClientExecutor(nil)
 	options.LogFn = func(format string, args ...interface{}) {
-		log.Infof("%s", fmt.Sprintf(format, args...))
+		log.Printf("%s", fmt.Sprintf(format, args...))
 	}
 	options.AuthFn = dockerclient.NoAuthFn
 	options.Client = client
@@ -39,13 +43,13 @@ func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) er
 
 	defer func() {
 		for _, err := range options.Release() {
-			log.Infof("unable to clean up the build: %v", err)
+			log.Printf("unable to clean up the build: %v", err)
 		}
 	}()
 
-	binaryPaths := []string{}
+	var binaryPaths []string
 	for _, binary := range config.Binaries {
-		binaryPaths = append(binaryPaths, binary.ToDockerAdd(b.binarySourceDir))
+		binaryPaths = append(binaryPaths, binaryToDockerAdd(b.binarySourceDir, binary))
 	}
 
 	dockerfile := bytes.NewBufferString(strings.Join(binaryPaths, "\n"))
@@ -56,7 +60,7 @@ func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) er
 
 	var stageExecutor *dockerclient.ClientExecutor
 
-	log.Infof("Building %q ...", imageName+":"+imageTag)
+	log.Printf("Building %q ...", imageName+":"+imageTag)
 	for _, stage := range stages {
 		stageExecutor = options.WithName(stage.Name)
 		if err := stageExecutor.Prepare(stage.Builder, stage.Node, imageName+":"+imageTag); err != nil {

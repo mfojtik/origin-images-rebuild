@@ -56,7 +56,12 @@ func main() {
 		defaultImageRepo = *repoFlag
 	}
 
-	builder := build.NewImageBuilder(filepath.Join(originDir, "_output", "local", "bin", "linux", "amd64"))
+	binaryBaseDir := filepath.Join("_output", "local", "bin", "linux", "amd64")
+	if _, err := os.Stat(binaryBaseDir); err != nil {
+		log.Fatalf("Binary directory %q does not exists, perhaps you forgot make build? (%v)", binaryBaseDir, err)
+	}
+
+	builder := build.NewImageBuilder(binaryBaseDir)
 
 	for _, image := range config.Images {
 		err := builder.Build(defaultImageRepo+"/origin-"+image.Name, defaultImageTag, &image)

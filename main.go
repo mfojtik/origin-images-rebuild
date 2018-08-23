@@ -59,7 +59,7 @@ func main() {
 	builder := build.NewImageBuilder(filepath.Join(originDir, "_output", "local", "bin", "linux", "amd64"))
 
 	for _, image := range config.Images {
-		err := builder.Build(defaultImageRepo+"/"+image.Name, defaultImageTag, &image)
+		err := builder.Build(defaultImageRepo+"/origin-"+image.Name, defaultImageTag, &image)
 		if err != nil {
 			log.Printf("Image %q failed to build: %v", image.Name, err)
 		}

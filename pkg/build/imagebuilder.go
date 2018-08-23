@@ -64,10 +64,10 @@ func (b *imageBuilder) Build(imageName, imageTag string, config *BuildConfig) er
 	for _, stage := range stages {
 		stageExecutor = options.WithName(stage.Name)
 		if err := stageExecutor.Prepare(stage.Builder, stage.Node, imageName+":"+imageTag); err != nil {
-			return err
+			return fmt.Errorf("%s prepare failed with: %v", stage.Name, err)
 		}
 		if err := stageExecutor.Execute(stage.Builder, stage.Node); err != nil {
-			return err
+			return fmt.Errorf("%s build execute failed with: %v", stage.Name, err)
 		}
 	}
 	return stageExecutor.Commit(stages[len(stages)-1].Builder)
